@@ -248,7 +248,7 @@ struct TerminateWorkflowExecutionRequest {
   // workflow execution that requests this termination, for making sure
   // the workflow being terminated is actually a child of the workflow
   // making the request
-  30: optional shared.WorkflowExecution externalWorkflowExecution 
+  30: optional shared.WorkflowExecution externalWorkflowExecution
   40: optional bool childWorkflowOnly
 }
 
@@ -373,6 +373,41 @@ struct GetFailoverInfoRequest {
 struct GetFailoverInfoResponse {
   10: optional i32 completedShardCount
   20: optional list<i32> pendingShards
+}
+
+struct RatelimitStartupRequest {
+  10: optional string caller
+}
+struct RatelimitStartupResponse {
+  10: optional map<string, RatelimitAdjustment> adjust
+}
+struct RatelimitUpdateRequest {
+  10: optional string caller
+  20: optional string last_updated // time.Duration string
+
+  30: optional map<string, RatelimitLoad> load
+}
+struct RatelimitUpdateResponse {
+  10: optional map<string, RatelimitAdjustment> adjust
+}
+
+struct RatelimitLoad {
+  10: optional Any any
+}
+
+struct RatelimitAdjustment {
+  10: optional Any any
+}
+
+/**
+* Any is a semantic copy of google.protobuf.Any.
+*
+* It should be used ONLY when structures are not wholly internally controlled,
+* e.g. when shared.DataBlob is not usable due to its repo-hardcoded types.
+**/
+struct Any {
+  10: optional string type // impl-specific type name
+  20: optional binary data // type-specific bytes
 }
 
 /**
@@ -969,7 +1004,7 @@ service HistoryService {
   /**
   * RespondCrossClusterTasksCompleted responds the result of processing cross cluster tasks
   **/
-  shared.RespondCrossClusterTasksCompletedResponse RespondCrossClusterTasksCompleted(1: shared.RespondCrossClusterTasksCompletedRequest request) 
+  shared.RespondCrossClusterTasksCompletedResponse RespondCrossClusterTasksCompleted(1: shared.RespondCrossClusterTasksCompletedRequest request)
     throws (
       1: shared.BadRequestError badRequestError,
       2: shared.InternalServiceError internalServiceError,
@@ -986,5 +1021,20 @@ service HistoryService {
       2: shared.ServiceBusyError serviceBusyError,
       3: ShardOwnershipLostError shardOwnershipLostError,
       4: shared.EntityNotExistsError entityNotExistError,
+    )
+
+  RatelimitStartupResponse RatelimitStartup(1: RatelimitStartupRequest request)
+    throws (
+      1: shared.BadRequestError badRequestError,
+      2: shared.InternalServiceError internalServiceError,
+      3: shared.ServiceBusyError serviceBusyError,
+      4: ShardOwnershipLostError shardOwnershipLostError,
+    )
+  RatelimitUpdateResponse RatelimitUpdate(1: RatelimitUpdateRequest request)
+    throws (
+      1: shared.BadRequestError badRequestError,
+      2: shared.InternalServiceError internalServiceError,
+      3: shared.ServiceBusyError serviceBusyError,
+      4: ShardOwnershipLostError shardOwnershipLostError,
     )
 }
