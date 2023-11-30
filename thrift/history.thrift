@@ -379,35 +379,40 @@ struct RatelimitStartupRequest {
   10: optional string caller
 }
 struct RatelimitStartupResponse {
-  10: optional map<string, RatelimitAdjustment> adjust
+  // impl-specific data.
+  // likely either:
+  // - map<ratelimit-key-string, something>
+  // - list<something>
+  //
+  // this is a single blob rather than a collection to save on
+  // repeated serialization of the type name, and to allow impls
+  // to choose whatever structures are most-convenient for them.
+  10: optional shared.Any data
 }
 struct RatelimitUpdateRequest {
   10: optional string caller
   20: optional string last_updated // time.Duration string
 
-  30: optional map<string, RatelimitLoad> load
+  // impl-specific data.
+  // likely either:
+  // - map<ratelimit-key-string, something>
+  // - list<something>
+  //
+  // this is a single blob rather than a collection to save on
+  // repeated serialization of the type name, and to allow impls
+  // to choose whatever structures are most-convenient for them.
+  30: optional shared.Any data
 }
 struct RatelimitUpdateResponse {
-  10: optional map<string, RatelimitAdjustment> adjust
-}
-
-struct RatelimitLoad {
-  10: optional Any any
-}
-
-struct RatelimitAdjustment {
-  10: optional Any any
-}
-
-/**
-* Any is a semantic copy of google.protobuf.Any.
-*
-* It should be used ONLY when structures are not wholly internally controlled,
-* e.g. when shared.DataBlob is not usable due to its repo-hardcoded types.
-**/
-struct Any {
-  10: optional string type // impl-specific type name
-  20: optional binary data // type-specific bytes
+  // impl-specific data.
+  // likely either:
+  // - map<ratelimit-key-string, something>
+  // - list<something>
+  //
+  // this is a single blob rather than a collection to save on
+  // repeated serialization of the type name, and to allow impls
+  // to choose whatever structures are most-convenient for them.
+  10: optional shared.Any data
 }
 
 /**
