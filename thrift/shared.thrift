@@ -1027,6 +1027,7 @@ struct DomainConfiguration {
   90: optional string historyArchivalURI
   100: optional ArchivalStatus visibilityArchivalStatus
   110: optional string visibilityArchivalURI
+  120: optional AsyncWorkflowConfiguration AsyncWorkflowConfiguration
 }
 
 struct FailoverInfo {
@@ -1151,6 +1152,13 @@ struct StartWorkflowExecutionRequest {
 
 struct StartWorkflowExecutionResponse {
   10: optional string runId
+}
+
+struct StartWorkflowExecutionAsyncRequest {
+  10: optional StartWorkflowExecutionRequest request
+}
+
+struct StartWorkflowExecutionAsyncResponse {
 }
 
 struct RestartWorkflowExecutionResponse {
@@ -1954,4 +1962,27 @@ struct Any {
   // Arbitrarily-encoded bytes, to be deserialized by a runtime implementation.
   // The contents are described by type_id.
   20: optional binary Value
+}
+
+struct AsyncWorkflowConfiguration {
+  // PredefinedQueueName is the name of the predefined queue in cadence server config's asyncWorkflowQueues
+  10: optional string predefinedQueueName
+
+  // Below fields are only used if predefinedQueueName is not set
+  20: optional AsyncWorkflowQueueType queueType
+  30: optional AsyncWorkflowKafkaQueueConfiguration kafkaConfig
+}
+
+enum AsyncWorkflowQueueType {
+  Invalid,
+  Kafka,
+}
+
+struct AsyncWorkflowKafkaQueueConfiguration {
+  10: optional string topic
+  20: optional string dlqTopic
+  30: optional string consumerGroup
+  40: optional list<string> brokers
+  50: optional map<string, string> properties
+  // TODO: define auth mechanisms such as tls, sasl
 }

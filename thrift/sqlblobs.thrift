@@ -71,6 +71,8 @@ struct DomainInfo {
   54: optional i64 (js.type = "Long") lastUpdatedTime
   56: optional binary isolationGroupsConfiguration
   58: optional string isolationGroupsConfigurationEncoding
+  60: optional binary asyncWorkflowConfiguration
+  62: optional string asyncWorkflowConfigurationEncoding
 }
 
 struct HistoryTreeInfo {
@@ -275,4 +277,16 @@ struct ReplicationTaskInfo {
   30: optional binary branch_token
   34: optional binary newRunBranchToken
   38: optional i64 (js.type = "Long") creationTime
+}
+
+enum AsyncRequestType {
+  StartWorkflowExecutionAsyncRequest
+}
+
+struct AsyncRequestMessage {
+  10: optional string partitionKey
+  12: optional AsyncRequestType type
+  14: optional shared.Header header
+  16: optional string encoding
+  18: optional binary payload
 }
